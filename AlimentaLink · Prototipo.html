@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AlimentaLink · Prototipo</title>
+<style>
+:root{--bg:#f5f6f6;--sf:#fff;--ink:#1c2220;--mut:#66726c;--ln:#dde2df;--pine:#2c5e49;--cit:#2c5e49;--tom:#b3402c;--ok:#2c7a53;--warn:#98660a;--info:#33609b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121715;--sf:#1a211e;--ink:#e8eeeb;--mut:#9aa8a1;--ln:#2d3732;--pine:#5fb590;--cit:#5fb590;--tom:#e8836f;--ok:#62c496;--warn:#d9a63b;--info:#7aa7e0}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1{font-size:28px;margin:20px 0 4px;font-weight:600}h2{font-size:22px;margin:0 0 4px;font-weight:600}h3{font-size:16px;font-weight:600}
+.logo{font-weight:700;font-size:20px}.logo b{color:var(--pine)}
+select,input,button{font:inherit;color:inherit}
+select,input{background:var(--sf);border:1px solid var(--ln);border-radius:4px;padding:7px 10px;width:100%}
+label{font-size:13px;color:var(--mut);display:block}
+nav{display:flex;gap:2px;overflow-x:auto}
+nav button{border:0;background:none;padding:10px 14px;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;color:var(--mut)}
+nav button.on{color:var(--ink);border-color:var(--ink);font-weight:600}
+main{max-width:1100px;margin:0 auto;padding:24px 20px}
+p.sub{margin:0 0 18px;color:var(--mut)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.st{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:14px}.st b{display:block;font-size:26px;font-weight:600;line-height:1.1}.st span{color:var(--mut);font-size:13px}
+.box{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:16px;margin-top:16px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--mut);font-weight:500;font-size:13px;padding:8px;border-bottom:1px solid var(--ln)}td{padding:8px;border-bottom:1px solid var(--ln);vertical-align:middle}
+.tag{display:inline-block;padding:1px 8px;border:1px solid var(--ln);border-radius:4px;font-size:12px;color:var(--mut)}
+.tag.Disponible,.tag.Entregada{color:var(--ok);border-color:var(--ok)}.tag.Pendiente{color:var(--warn);border-color:var(--warn)}.tag.Rechazada,.tag.Cancelada,.tag.No{color:var(--tom);border-color:var(--tom)}.tag.Reservado,.tag.Reservada{color:var(--info);border-color:var(--info)}
+.btn{background:var(--pine);color:var(--sf);border:1px solid var(--pine);border-radius:4px;padding:8px 14px;cursor:pointer}
+.btn.alt{background:none;color:var(--ink);border-color:var(--ln)}.btn.sm{padding:3px 10px;font-size:13px}
+.btn:focus-visible,nav button:focus-visible,select:focus-visible,input:focus-visible,.tarjeta-usuario:focus-visible{outline:2px solid var(--info);outline-offset:1px}
+.form,.registro-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.registro-grid label{display:block}.registro-grid input,.registro-grid select{margin-top:5px}
+.prop{border:1px solid var(--ln);border-radius:6px;padding:14px;margin-top:12px;background:var(--sf)}
+.prop .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.score{font-size:26px;font-weight:600}
+.bars{display:grid;gap:6px;margin:10px 0;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.bar{font-size:12px;color:var(--mut)}.bar div{height:5px;background:var(--ln);border-radius:3px;margin-top:3px}.bar div i{display:block;height:100%;background:var(--pine);border-radius:3px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row select{width:auto}
+.empty{color:var(--mut);padding:18px;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:4px;z-index:9}
+body.inicio > header,body.inicio > nav,body.inicio > main,body.inicio > #sessionBar{display:none !important}
+body:not(.inicio) > #pantallaInicial{display:none !important}
+#sessionBar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:var(--sf);border-bottom:1px solid var(--ln)}
+#sessionInfo strong{display:block}#sessionInfo span{color:var(--mut);font-size:13px}
+#nav{padding:0 20px;border-bottom:1px solid var(--ln);background:var(--sf)}
+.pantalla-inicial{max-width:760px;margin:40px auto;padding:20px}
+.tarjetas-usuarios{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px}
+.tarjeta-usuario{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:16px;cursor:pointer;font:inherit;color:var(--ink);text-align:left}
+.tarjeta-usuario:hover{border-color:var(--ink)}.tarjeta-usuario p{margin:4px 0 0;color:var(--mut);font-size:14px}
+.registro-wrap{max-width:760px;margin:18px auto}
+.perfil-dato{padding:10px 0;border-bottom:1px solid var(--ln)}.perfil-dato small{display:block;color:var(--mut)}
+@media(max-width:550px){.tarjetas-usuarios{grid-template-columns:1fr}.pantalla-inicial{margin:16px auto}}
+</style></head><body class="inicio">
+
+    <section class="pantalla-inicial" id="pantallaInicial">
+<div class="logo">Alimenta<b>Link</b></div>
+<h1>Crear cuenta</h1>
+<p class="sub">Elige cómo vas a participar. Solo se manejan alimentos secos no perecederos.</p>
+<div class="tarjetas-usuarios">
+<button class="tarjeta-usuario" data-a="chooseRole" data-i="Voluntario"><strong>Voluntario</strong><p>Recoge y entrega alimentos con tu vehículo.</p></button>
+<button class="tarjeta-usuario" data-a="chooseRole" data-i="Donador"><strong>Donador</strong><p>Registra alimentos para donar.</p></button>
+<button class="tarjeta-usuario" data-a="chooseRole" data-i="Organización receptora"><strong>Fundación</strong><p>Solicita alimentos para tu organización.</p></button>
+<button class="tarjeta-usuario" data-a="chooseRole" data-i="Transportista"><strong>Transportista</strong><p>Registra los camiones de tu empresa.</p></button>
+</div>
+<p style="margin-top:28px"><button class="btn alt sm" data-a="adminAccess">Entrar como administrador (demo)</button></p>
+</section>
+    
+<header id="sessionBar">
+  <div id="sessionInfo">
+    <div class="logo">Alimenta<b>Link</b></div>
+  </div>
+  <button class="btn alt" type="button" data-a="logout">Cerrar sesión</button>
+</header>
+<nav id="nav" aria-label="Módulos"></nav>
+<main id="app"></main>
+<script>
+const TODAY=new Date("2026-11-15"),LOC={Puebla:[19.04,-98.2],Cholula:[19.06,-98.3],Atlixco:[18.9,-98.43],Amozoc:[19.03,-98.05],Tlaxcala:[19.32,-98.24],Huejotzingo:[19.16,-98.4],Texmelucan:[19.28,-98.43],Tepeaca:[18.96,-97.9]};
+const S={tab:"Inicio",role:null,profile:null,d:[
+{id:"D-001",emp:"Supermercado A",prod:"Arroz",kg:100,libre:100,cad:"2027-05-20",ub:"Puebla",h:[10,14],emp2:"Íntegro",est:"Disponible"},
+{id:"D-002",emp:"Productores del Valle",prod:"Frijol",kg:60,libre:60,cad:"2027-02-24",ub:"Atlixco",h:[9,13],emp2:"Íntegro",est:"Disponible"},
+{id:"D-003",emp:"Panadería La Espiga",prod:"Pasta",kg:25,libre:25,cad:"2027-01-18",ub:"Cholula",h:[12,16],emp2:"Íntegro",est:"Pendiente de revisión"},
+{id:"D-004",emp:"Abarrotes Tlaxcala",prod:"Lentejas",kg:80,libre:80,cad:"2026-12-05",ub:"Tlaxcala",h:[8,12],emp2:"Íntegro",est:"Disponible"}],
+o:[{id:"O-01",n:"Comedor A",tipo:"Comedor comunitario",ub:"Puebla",prod:"Arroz",kg:50,alm:300,h:[10,14],ok:true},
+{id:"O-02",n:"Fundación Manos Unidas",tipo:"Fundación",ub:"Cholula",prod:"Frijol",kg:40,alm:150,h:[10,15],ok:true},
+{id:"O-03",n:"Casa Hogar Esperanza",tipo:"Casa hogar",ub:"Amozoc",prod:"Lentejas",kg:60,alm:120,h:[9,13],ok:true},
+{id:"O-04",n:"Banco Vecinal Norte",tipo:"Banco de alimentos",ub:"Tlaxcala",prod:"Harina",kg:30,alm:80,h:[12,17],ok:false}],
+v:[{id:"V-01",prov:"Transportes Ruiz",marca:"Nissan",modelo:"NP300",anio:2022,placas:"Muestra-001",tipo:"Camión de 3.5 toneladas",cap:3500,ub:"Puebla",h:[8,16],est:"Disponible"},
+{id:"V-02",prov:"Logística Fría MX",marca:"Isuzu",modelo:"ELF 300",anio:2021,placas:"Muestra-002",tipo:"Camión rabón",cap:1200,ub:"Cholula",h:[8,15],est:"Disponible"},
+{id:"V-03",prov:"Voluntarios Puebla",marca:"Ford",modelo:"Ranger",anio:2020,placas:"Muestra-003",tipo:"Camioneta",cap:40,ub:"Puebla",h:[10,14],est:"Disponible"}],
+a:[],e:[],inc:[],n:1};
+const $=s=>document.querySelector(s),km=(a,b)=>{const[p,q]=[LOC[a],LOC[b]],r=x=>x*Math.PI/180,dl=r(q[0]-p[0]),dg=r(q[1]-p[1]);const h=Math.sin(dl/2)**2+Math.cos(r(p[0]))*Math.cos(r(q[0]))*Math.sin(dg/2)**2;return 12742*Math.asin(Math.sqrt(h))};
+const ov=(...w)=>Math.max(0,Math.min(...w.map(x=>x[1]))-Math.max(...w.map(x=>x[0])));
+const days=c=>Math.round((new Date(c)-TODAY)/864e5),tag=t=>`<span class="tag ${t.split(" ")[0]}">${t}</span>`;
+const hr=h=>`${h[0]}:00–${h[1]}:00`,fd=c=>new Date(c+"T12:00").toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"});
+const log=(x,m)=>{(x.hist=x.hist||[]).push(new Date().toLocaleTimeString("es-MX",{hour:"2-digit",minute:"2-digit"})+" · "+m)};
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+const sels=(id,arr,sel)=>`<select id="${id}">${arr.map(x=>`<option ${x==sel?"selected":""}>${x}</option>`).join("")}</select>`;
+const fld=(l,h)=>`<div><label>${l}</label>${h}</div>`;
+
+/* Algoritmo de reglas y puntuación (máx. 100) */
+const nz=s=>String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+const coincide=(a,b)=>{a=nz(a);b=nz(b);if(!a||!b)return 0;if(a==b)return 30;if(a.includes(b)||b.includes(a))return 25;const w=x=>x.split(/\s+/).filter(t=>t.length>3);return w(a).some(t=>w(b).includes(t))?18:0};
+const lista=i=>proponer(S.role=="Voluntario"?S.volId:null)[i];
+function proponer(onlyV){
+  const out=[];
+  S.d.filter(d=>d.est=="Disponible"&&d.libre>0&&days(d.cad)>=1).forEach(d=>S.o.filter(o=>o.ok).forEach(o=>{
+    const pm=coincide(d.prod,o.prod);if(!pm)return;
+    if(S.a.some(a=>a.d==d.id&&a.o==o.id&&a.est!="Rechazada"))return;
+    let best=null;
+    S.v.filter(v=>v.est=="Disponible"&&(!onlyV||v.id==onlyV)).forEach(v=>{
+      const o1=ov(d.h,v.h,o.h);if(o1<1)return;
+      const need=Math.min(d.libre,o.kg),q=Math.min(need,v.cap),dist=km(v.ub,d.ub)+km(d.ub,o.ub);
+      const b={prod:pm,cant:15*q/need,cap:15*Math.min(1,v.cap/need),dist:15*Math.max(0,1-dist/80),hor:Math.min(10,o1*2.5),cad:15*(1-Math.min(days(d.cad),365)/365)};
+      const t=Object.values(b).reduce((x,y)=>x+y,0);
+      if(!best||t>best.t)best={v,q:Math.round(q),b,t:Math.round(t),dist:Math.round(dist),o1};
+    });
+    if(best)out.push({d,o,...best});
+  }));
+  return out.sort((a,b)=>b.t-a.t).slice(0,6);
+}
+const MET=[["prod","Producto","/30",30],["cant","Cantidad","/15",15],["cap","Capacidad del vehículo","/15",15],["dist","Distancia","/15",15],["hor","Horarios","/10",10],["cad","Urgencia de caducidad","/15",15]];
+
+function mapa(){
+ const X=c=>(LOC[c][1]+98.7)*820+40,Y=c=>(19.4-LOC[c][0])/0.58*440+40,it={};
+ const add=(c,k,t)=>(it[c]=it[c]||[]).push({k,t});
+ S.o.filter(o=>o.ok).forEach(o=>add(o.ub,"o",o.n));
+ S.d.filter(d=>["Disponible","Reservada","En recogida"].includes(d.est)).forEach(d=>add(d.ub,"d",`${d.prod} ${d.libre} kg`));
+ S.v.filter(v=>v.est!="No disponible").forEach(v=>add(v.ub,"v",`${v.id} ${v.est.toLowerCase()}`));
+ const rutas=S.e.filter(e=>e.est!="Entregada").map(e=>{const d=find("d",e.did),o=S.o.find(o=>o.n==e.on),v=find("v",e.vn);return d&&o&&v?`<polyline points="${[v.ub,d.ub,o.ub].map(c=>X(c)+","+Y(c)).join(" ")}" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 5"/>`:""}).join("");
+ const pts=Object.keys(LOC).map(c=>{const x=X(c),y=Y(c),a=it[c]||[];return `<circle cx="${x}" cy="${y}" r="3" fill="var(--mut)"/><text x="${x}" y="${y-(a.length>6?44:30)}" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink)">${c}</text>`+a.map((p,i)=>{const r=16+Math.floor(i/6)*12,t=i*1.05,px=x+r*Math.cos(t),py=y+r*Math.sin(t);const m=p.k=="o"?`<circle cx="${px}" cy="${py}" r="7" fill="var(--pine)"/>`:p.k=="d"?`<rect x="${px-6}" y="${py-6}" width="12" height="12" fill="var(--warn)"/>`:`<polygon points="${px},${py-8} ${px+8},${py+6} ${px-8},${py+6}" fill="var(--info)"/>`;return `<g><title>${esc(p.t)}</title>${m}</g>`}).join("")}).join("");
+ const grid=[1,2,3,4,5,6,7,8].map(i=>`<line x1="${i*100}" y1="0" x2="${i*100}" y2="520"/>`).join("")+[1,2,3,4,5].map(i=>`<line x1="0" y1="${i*100}" x2="900" y2="${i*100}"/>`).join("");
+ const sy=k=>k=="o"?'<span style="color:var(--pine)">●</span>':k=="d"?'<span style="color:var(--warn)">■</span>':'<span style="color:var(--info)">▲</span>';
+ const lst=Object.keys(LOC).filter(c=>it[c]).map(c=>`<div><b>${c}:</b> ${it[c].map(p=>sy(p.k)+" "+esc(p.t)).join(" · ")}</div>`).join("");
+ return `<div class="box"><b>Mapa de la red · zona de Puebla</b><svg viewBox="0 0 900 520" width="100%" role="img" aria-label="Mapa de organizaciones, donaciones y vehículos en la zona de Puebla" style="display:block;background:var(--bg);border:1px solid var(--ln);margin-top:10px"><g stroke="var(--ln)">${grid}</g>${rutas}${pts}</svg>
+ <div class="row" style="font-size:13px;color:var(--mut);margin-top:8px"><span>${sy("o")} Fundación u organización</span><span>${sy("d")} Donación</span><span>${sy("v")} Vehículo</span><span>- - Ruta activa</span></div><div style="font-size:13px;margin-top:8px;line-height:1.8">${lst}</div></div>`}
+const V={
+Inicio(){const D=S.d,E=S.e,kg=E.filter(e=>e.est=="Entregada").reduce((s,e)=>s+(+e.rec||0),0);
+ const c=f=>D.filter(f).length;
+ const rows=[...D.map(d=>[d.id,`${d.prod} · ${d.kg} kg`,d.emp,d.est]),...E.map(e=>[e.id,`Entrega de ${e.q} kg`,e.on,e.est])].slice(-8).reverse();
+ return `<h2>Panel de coordinación</h2><p class="sub">Así se ve el estado de la red en este momento.</p>
+ <div class="grid"><div class="st big"><b>${kg}</b><span>kg entregados</span></div>
+ <div class="st"><b>${D.length}</b><span>Donaciones registradas</span></div>
+ <div class="st"><b>${c(d=>d.est.startsWith("Pendiente"))}</b><span>Pendientes de revisión</span></div>
+ <div class="st"><b>${c(d=>d.est=="Disponible")}</b><span>Disponibles</span></div>
+ <div class="st"><b>${S.a.filter(a=>a.est=="Confirmada").length}</b><span>Asignaciones confirmadas</span></div>
+ <div class="st"><b>${E.filter(e=>e.est=="Entregada").length}</b><span>Entregas completadas</span></div>
+ <div class="st"><b>${c(d=>["Rechazada","Cancelada"].includes(d.est))+S.a.filter(a=>a.est=="Rechazada").length}</b><span>Rechazadas o canceladas</span></div></div>
+ <div class="box"><b>Últimas operaciones</b><div class="tw"><table><tr><th>ID</th><th>Detalle</th><th>Origen</th><th>Estado</th></tr>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${tag(r[3])}</td></tr>`).join("")}</table></div></div>`},
+Donaciones(){return `<h2>Donaciones</h2><p class="sub">Solo alimentos secos no perecederos (arroz, frijol, lentejas, pasta, harina, aceite, enlatados). El administrador aprueba cada registro antes de asignarlo.</p>
+ <div class="box"><div class="form">${fld("Empresa donadora",`<input id="f1" value="Supermercado B">`)}${fld("Alimento (escríbelo)",`<input id="f2" required placeholder="Ej. arroz, frijol, pasta">`)}${fld("Cantidad (kg)",`<input id="f3" type="number" value="80">`)}${fld("Caduca o consumo preferente",`<input id="f4" type="date" value="2027-03-01">`)}${fld("Ciudad de recogida",sels("f5",Object.keys(LOC),"Puebla"))}${fld("Dirección exacta de recogida",`<input id="f9" required placeholder="Calle, número, colonia">`)}${fld("Horario (inicio–fin)",`<div class="row"><input id="f6" type="number" value="10" style="width:70px"><input id="f7" type="number" value="14" style="width:70px"></div>`)}${fld("Teléfono de contacto (10 números)",`<input id="f10" data-tel inputmode="numeric" maxlength="10" placeholder="2221234567">`)}</div>
+ <p><button class="btn" data-a="addD">Registrar donación</button></p></div>
+ <div class="box tw"><table><tr><th>ID</th><th>Donador</th><th>Producto</th><th>Disponible</th><th>Caduca</th><th>Recogida</th><th>Estado</th><th></th></tr>
+ ${S.d.map(d=>`<tr><td>${d.id}</td><td>${d.emp}</td><td>${d.prod}</td><td>${d.libre}/${d.kg} kg</td><td>${fd(d.cad)}</td><td>${d.ub}${d.direccion?` · ${d.direccion}`:""}, ${hr(d.h)}</td><td>${tag(d.est)}</td><td>${d.est.startsWith("Pendiente")&&S.role=="Administrador"?`<button class="btn sm" data-a="apD" data-i="${d.id}">Aprobar</button> <button class="btn sm alt" data-a="reD" data-i="${d.id}">Rechazar</button>`:d.est=="Disponible"?`<button class="btn sm alt" data-a="caD" data-i="${d.id}">Cancelar</button>`:""}</td></tr>`).join("")}</table></div>`},
+Organizaciones(){return `<h2>Organizaciones receptoras</h2><p class="sub">Fundaciones y comedores con sus necesidades vigentes. Solo alimentos secos no perecederos.</p>
+ <div class="box"><div class="form">${fld("Organización",`<input id="g1" value="Comedor Santa Rosa">`)}${fld("Alimento que necesita (escríbelo)",`<input id="g2" required placeholder="Ej. arroz, frijol, pasta">`)}${fld("Cantidad (kg)",`<input id="g3" type="number" value="40">`)}${fld("Ciudad de entrega",sels("g4",Object.keys(LOC),"Puebla"))}${fld("Dirección exacta de entrega",`<input id="g8" required value="${esc(S.profile?.domicilio||"")}" placeholder="Calle, número, colonia">`)}${fld("Recibe de (h)",`<div class="row"><input id="g5" type="number" value="10" style="width:70px"><input id="g6" type="number" value="15" style="width:70px"></div>`)}${fld("Teléfono de contacto (10 números)",`<input id="g9" data-tel inputmode="numeric" maxlength="10" value="${esc(S.profile?.telefono||"")}" placeholder="2221234567">`)}</div>
+ <p><button class="btn" data-a="addO">Enviar registro</button></p></div>
+ <div class="box tw"><table><tr><th>Organización</th><th>Tipo</th><th>Necesita</th><th>Recibe</th><th>Ubicación</th><th>Verificación</th><th></th></tr>
+ ${S.o.map(o=>`<tr><td>${o.n}</td><td>${o.tipo}</td><td>${o.kg} kg de ${o.prod}</td><td>${hr(o.h)}</td><td>${o.ub}</td><td>${tag(o.ok?"Disponible":"Pendiente")}</td><td>${!o.ok&&S.role=="Administrador"?`<button class="btn sm" data-a="apO" data-i="${o.id}">Verificar</button>`:""}</td></tr>`).join("")}</table></div>`},
+Transporte(){const propios=S.v.filter(v=>S.role!=="Transportista"||v.prov===(S.profile?.empresa||S.profile?.nombre));return `<h2>Flota de transporte</h2><p class="sub">Cada camión se registra por separado. La asignación utiliza los datos de esa unidad, no los de toda la empresa.</p>
+ <div class="box"><h3 style="margin-top:0">Registrar un camión</h3><form id="vehicleForm" novalidate><div class="form">
+ ${fld("Empresa o responsable",`<input name="prov" value="${esc(S.profile?.empresa||S.profile?.nombre||"")}" required ${S.role==="Transportista"?"readonly":""}>`)}
+ ${fld("Marca",`<input name="marca" required placeholder="Ej. Nissan, Isuzu, Freightliner">`)}
+ ${fld("Modelo",`<input name="modelo" required placeholder="Ej. NP300, ELF 300, M2">`)}
+ ${fld("Año",`<input name="anio" type="number" min="1980" max="2035" required placeholder="Ej. 2022">`)}
+ ${fld("Placas",`<input name="placas" required placeholder="Placas del vehículo">`)}
+ ${fld("Tipo de vehículo",`<select name="tipo" required><option value="">Selecciona</option>${["Camioneta","Camión de 3.5 toneladas","Camión rabón","Camión torton","Otro"].map(x=>`<option>${x}</option>`).join("")}</select>`)}
+ ${fld("Capacidad de carga (kg)",`<input name="cap" type="number" min="1" required placeholder="Ej. 1500">`)}
+ ${fld("Ciudad donde opera",`<select name="ub" required><option value="">Selecciona</option>${Object.keys(LOC).map(x=>`<option>${x}</option>`).join("")}</select>`)}
+ ${fld("Hora de inicio",`<input name="inicio" type="number" min="0" max="23" required value="8">`)}
+ ${fld("Hora de fin",`<input name="fin" type="number" min="1" max="24" required value="16">`)}
+ ${fld("Teléfono del conductor (10 números)",`<input name="telefono" data-tel inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required value="${esc(S.profile?.telefono||"")}">`)}
+ </div><p id="vehicleError" role="alert" style="color:var(--tom);font-weight:600"></p><p><button class="btn" type="submit">Registrar este camión</button></p></form>
+ <p style="color:var(--mut);font-size:13px;margin-bottom:0">Puedes registrar más de un camión. Cada uno tendrá su propio modelo, placas, capacidad y disponibilidad.</p></div>
+ <div class="box tw"><h3 style="margin-top:0">Camiones registrados (${propios.length})</h3><table><tr><th>ID</th><th>Empresa</th><th>Marca / modelo</th><th>Año</th><th>Placas</th><th>Tipo</th><th>Capacidad</th><th>Ciudad</th><th>Horario</th><th>Estado</th></tr>
+ ${propios.map(v=>`<tr><td>${v.id}</td><td>${v.prov}</td><td>${v.marca||"—"} ${v.modelo||""}</td><td>${v.anio||"—"}</td><td>${v.placas||"—"}</td><td>${v.tipo}</td><td>${v.cap} kg</td><td>${v.ub}</td><td>${hr(v.h)}</td><td><select data-a="vst" data-i="${v.id}" style="width:auto">${["Disponible","Reservado","No disponible"].map(x=>`<option ${x==v.est?"selected":""}>${x}</option>`).join("")}</select>${v.con?`<br><small style="color:var(--mut)">En entrega ${v.con}</small>`:""}</td></tr>`).join("")||`<tr><td colspan="10">Todavía no has registrado camiones.</td></tr>`}</table></div>`},
+Asignaciones(){const P=proponer();
+ return `<h2>Asignaciones</h2><p class="sub">Algoritmo de reglas y puntuación (0 a 100).</p>
+ <p><button class="btn cit" data-a="run">Ejecutar algoritmo</button></p>
+ ${S.ran?(P.length?P.map((p,i)=>`<div class="prop"><div class="top"><div><b>Propuesta AL-${String(S.n+i).padStart(3,"0")}</b><br>${p.d.id} · ${p.q} kg de ${p.d.prod} (${p.d.emp}) → ${p.o.n} con ${p.v.id} (${p.v.prov})</div><div class="score">${p.t}<small style="font-size:14px;color:var(--mut)">/100</small></div></div>
+ <div class="bars">${MET.map(m=>`<div class="bar">${m[1]}: ${p.b[m[0]].toFixed(1)}${m[2]}<div><i style="width:${p.b[m[0]]/m[3]*100}%"></i></div></div>`).join("")}</div>
+ <p style="margin:0 0 10px;color:var(--mut);font-size:14px">Ruta: recoger en ${p.d.direccion||p.d.ub} y entregar en ${p.o.direccion||p.o.ub}. ${p.b.prod>=25?"Coincide el producto solicitado":"Producto parecido al solicitado"}; recorrido estimado de ${p.dist} km; horario común de ${p.o1} h; caduca en ${days(p.d.cad)} días.</p>
+ <div class="row"><button class="btn" data-a="acc" data-i="${i}">Aceptar</button><select id="mo${i}"><option>Motivo si rechazas…</option><option>Producto no apto</option><option>Horario no viable</option><option>Sin capacidad de almacenamiento</option></select><button class="btn alt" data-a="rej" data-i="${i}">Rechazar</button></div></div>`).join(""):`<div class="empty">No hay propuestas compatibles. Revisa que haya donaciones disponibles, organizaciones verificadas y vehículos disponibles.</div>`):`<div class="empty">Pulsa «Ejecutar algoritmo» para generar propuestas.</div>`}
+ <div class="box"><b>Cómo puntúa</b><p style="margin:6px 0 0;color:var(--mut);font-size:14px">Producto 30 + cantidad 15 + capacidad 15 + distancia 15 + horarios 10 + urgencia de caducidad 15. Se descartan combinaciones sin horario común, sin vehículo disponible o con alimento ya caducado.</p></div>`},
+Seguimiento(){return `<h2>Seguimiento</h2><p class="sub">Todo lo que pasa después de aceptar una asignación, con historial de cambios.</p>
+ ${mapa()}
+ ${S.e.length?S.e.map(e=>`<div class="prop"><div class="top"><div><b>${e.id}</b> · ${e.dn} → ${e.on}<br><span style="color:var(--mut)">Vehículo ${e.vn} · enviados ${e.q} kg${e.est=="Entregada"?` · recibidos ${e.rec} kg`:""}</span></div>${tag(e.est)}</div>
+ <div style="margin:10px 0">${e.est=="Reservada"?`<button class="btn sm" data-a="pick" data-i="${e.id}">Registrar recogida</button>`:e.est=="En recogida"?`<div class="row"><input id="rc${e.id}" type="number" value="${e.q}" style="width:100px" aria-label="Cantidad recibida"><button class="btn sm" data-a="del" data-i="${e.id}">Confirmar recepción</button></div>`:""}</div>
+ <details><summary>Historial (${e.hist.length})</summary>${e.hist.map(h=>`<div style="font-size:13px;color:var(--mut)">${h}</div>`).join("")}</details></div>`).join(""):`<div class="empty">Aún no hay entregas. Acepta una propuesta en Asignaciones.</div>`}
+ <div class="box"><b>Incidencias y rechazos</b>${S.inc.length?`<ul>${S.inc.map(i=>`<li>${i}</li>`).join("")}</ul>`:`<p class="empty">Sin incidencias.</p>`}</div>`},
+ Voluntario(){const v=find("v",S.volId);if(!v)return `<div class="empty">Registra tu vehículo para ver pedidos.</div>`;const P=v.est=="Disponible"?proponer(S.volId):[];
+ return `<h2>Pedidos que puedes recoger</h2><p class="sub">Según tu vehículo: hasta ${v.cap} kg, saliendo de ${v.ub}, de ${hr(v.h)}.</p>
+ ${v.est!="Disponible"?`<div class="box">Tienes una entrega en curso${v.con?` (${v.con})`:""}. Termínala en Seguimiento para ver más pedidos.</div>`:P.length?P.map((p,i)=>`<div class="prop"><div class="top"><div><b>${p.q} kg de ${esc(p.d.prod)}</b>${p.q<Math.min(p.d.libre,p.o.kg)?" (carga parcial)":""}<br><span style="color:var(--mut)">Recoger: ${esc(p.d.direccion||p.d.ub)}, ${p.d.ub} · ${hr(p.d.h)}<br>Entregar: ${esc(p.o.n)}, ${esc(p.o.direccion||p.o.ub)} · ${hr(p.o.h)}</span></div><div>${p.dist} km</div></div><p style="margin:10px 0;color:var(--mut);font-size:14px">Horario en común: ${Math.max(p.d.h[0],v.h[0],p.o.h[0])}:00–${Math.min(p.d.h[1],v.h[1],p.o.h[1])}:00 · el alimento caduca en ${days(p.d.cad)} días</p><button class="btn" data-a="acc" data-i="${i}">Aceptar pedido</button></div>`).join(""):`<div class="empty">No hay pedidos compatibles con tu vehículo y tu horario por ahora.</div>`}`},
+ Perfil(){const p=S.profile||{};return `<h2>Perfil creado correctamente</h2><p class="sub">Este es el perfil de la cuenta que acabas de registrar.</p><div class="box">${Object.entries(p).map(([k,v])=>`<div class="perfil-dato"><small>${esc(k)}</small><b>${esc(v||"No proporcionado")}</b></div>`).join("")}</div>`}};
+
+const NAV={"Administrador":["Inicio","Donaciones","Organizaciones","Transporte","Asignaciones","Seguimiento"],"Donador":["Donaciones","Perfil"],"Organización receptora":["Organizaciones","Seguimiento","Perfil"],"Transportista":["Transporte","Seguimiento","Perfil"],"Voluntario":["Voluntario","Seguimiento","Perfil"]};
+const REG_FIELDS={
+ "Donador":[["Nombre de la empresa","nombre","text",true],["Domicilio o ubicación","domicilio","text",true],["Correo electrónico","correo","email",true],["Teléfono","telefono","tel",true],["Persona responsable","responsable","text",true],["RFC","rfc","text",true]],
+ "Organización receptora":[["Nombre de la fundación o comedor","nombre","text",true],["Domicilio o ubicación","domicilio","text",true],["Correo electrónico","correo","email",true],["Teléfono","telefono","tel",true],["Persona responsable","responsable","text",true],["RFC o CLUNI","identificacion","text",true]],
+ "Transportista":[["Nombre de empresa o proveedor","empresa","text",true],["Domicilio o ubicación","domicilio","text",true],["Correo electrónico","correo","email",true],["Teléfono","telefono","tel",true],["RFC","rfc","text",true],["Persona responsable","responsable","text",true]],
+ "Voluntario":[["Nombre completo","nombre","text",true],["Correo electrónico","correo","email",true],["Teléfono (10 números)","telefono","tel",true],["Tipo de vehículo","tipo","select",true,["Auto","Pickup","Camioneta","Camión"]],["Capacidad de carga (kg)","capacidad","number",true],["Ciudad desde donde sales","ciudad","select",true,Object.keys(LOC)],["Hora de inicio (0 a 23)","inicio","number",true],["Hora de fin (1 a 24)","fin","number",true]]
+};
+function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function registrationHTML(role){
+ const fields=REG_FIELDS[role]||[];
+ const inp=(key,type,req,opts)=>{if(type==="select")return `<select id="reg_${key}" name="${key}" ${req?"required":""}><option value="">Selecciona una opción</option>${(opts||["Sí","No"]).map(x=>`<option>${x}</option>`).join("")}</select>`;
+  if(type==="tel")return `<input id="reg_${key}" name="${key}" type="tel" data-tel inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="10 números" required placeholder="2221234567">`;
+  const ex=type==="number"?(key==="inicio"?'min="0" max="23" value="8"':key==="fin"?'min="1" max="24" value="16"':'min="1"'):"";
+  return `<input id="reg_${key}" name="${key}" type="${type}" ${req?"required":""} ${ex} placeholder="Escribe aquí">`};
+ return `<div class="registro-wrap"><h2>Crear perfil de ${role}</h2><p class="sub">Completa tus datos para entrar a tu espacio de AlimentaLink.</p>
+ <div class="box"><form id="regForm" novalidate><div class="registro-grid">${fields.map(([label,key,type,req,opts])=>`<label>${label}${inp(key,type,req,opts)}</label>`).join("")}</div>
+ <p id="regError" role="alert" style="color:var(--tom);font-weight:600"></p><p class="row" style="margin-top:18px"><button type="submit" class="btn">Crear mi perfil</button><button type="button" class="btn alt" data-a="backToRoles">Regresar</button></p></form></div></div>`;
+}
+function draw(){
+ if(!S.role){document.body.classList.add("inicio");$("#nav").innerHTML="";$("#app").innerHTML="";return}
+ document.body.classList.remove("inicio");
+ const name=S.profile?(S.profile.nombre||S.profile.empresa||"Mi cuenta"):"Administrador";
+ $("#sessionInfo").innerHTML=`<div class="logo">Alimenta<b>Link</b></div><strong>${esc(name)}</strong><span>${esc(S.role)} · Demostración</span>`;
+ if(S.role!=="Administrador"&&!S.profile){$("#nav").innerHTML="";$("#nav").style.display="none";$("#app").innerHTML=registrationHTML(S.role);return}
+ const tabs=NAV[S.role]||[];
+ $("#nav").style.display="flex";
+ if(!tabs.includes(S.tab))S.tab=tabs[0]||"Inicio";
+ $("#nav").innerHTML=tabs.map(t=>`<button class="${t==S.tab?"on":""}" data-a="tab" data-i="${t}">${t=="Perfil"?"Mi perfil":t=="Voluntario"?"Pedidos para recoger":t}</button>`).join("");
+ $("#app").innerHTML=V[S.tab]?V[S.tab]():`<div class="empty">Apartado en construcción.</div>`;
+}
+const g=id=>document.getElementById(id).value;
+const find=(a,id)=>S[a].find(x=>x.id==id);
+const ACT={tab:i=>S.tab=i,
+  chooseRole(i){S.role=i;S.profile=null;S.tab=(NAV[i]||[])[0]||"Inicio";draw()},
+  adminAccess(){S.role="Administrador";S.profile={nombre:"Administrador de demostración"};S.tab="Inicio";draw()},
+  backToRoles(){S.role=null;S.profile=null;S.tab="Inicio";draw()},
+  logout(){S.role=null;S.profile=null;S.tab="Inicio";draw();toast("Sesión de demostración cerrada")},
+  completeRegistration(){
+    const form=$("#regForm");
+    if(!form)return false;
+    if(!form.checkValidity()){
+      const bad=form.querySelector(":invalid");
+      const msg=$("#regError");
+      if(msg)msg.textContent="Completa todos los campos obligatorios y revisa el correo y que el teléfono tenga 10 números.";
+      if(bad)bad.focus();
+      return false;
+    }
+    if(S.role==="Voluntario"&&+form.elements.fin.value<=+form.elements.inicio.value){const m=$("#regError");if(m)m.textContent="La hora de fin debe ser posterior a la de inicio.";return false}
+    S.profile=Object.fromEntries(new FormData(form).entries());
+    if(S.role==="Voluntario"){const p=S.profile,v={id:"V-"+String(S.v.length+1).padStart(3,"0"),prov:p.nombre,marca:"—",modelo:"",anio:"",placas:"",tipo:"Voluntario · "+p.tipo,cap:+p.capacidad,ub:p.ciudad,h:[+p.inicio,+p.fin],tel:p.telefono,est:"Disponible"};S.v.push(v);S.volId=v.id}
+    // Transportista entra directamente a registrar su flota; los demás ven primero su perfil.
+    S.tab=S.role==="Transportista"?"Transporte":S.role==="Voluntario"?"Voluntario":"Perfil";
+    toast(S.role==="Transportista"?"Cuenta creada. Registra aquí cada camión de tu empresa.":S.role==="Voluntario"?"Registro completo. Estos son los pedidos que puedes recoger.":"Perfil creado correctamente.");
+    return true;
+  },
+ addD(){if(!g("f2").trim()){toast("Escribe qué alimento donas.");return}if(!/^\d{10}$/.test(g("f10"))){toast("El teléfono debe tener 10 números.");return}if(!g("f9").trim()){toast("Escribe la dirección exacta donde se recogerá el alimento.");return}const id="D-"+String(S.d.length+1).padStart(3,"0"),p=g("f2"),d={id,emp:g("f1"),prod:p,kg:+g("f3"),libre:+g("f3"),cad:g("f4"),ub:g("f5"),direccion:g("f9"),h:[+g("f6"),+g("f7")],tel:g("f10"),est:"Pendiente de revisión",hist:[]};log(d,"Donación registrada");S.d.push(d);toast("Donación registrada. Espera la aprobación del administrador.")},
+ apD(i){const d=find("d",i);d.est="Disponible";log(d,"Aprobada")},
+ reD(i){const d=find("d",i);d.est="Rechazada";S.inc.push(`${d.id}: rechazada por el administrador`)},
+ caD(i){find("d",i).est="Cancelada"},
+ addO(){if(!g("g2").trim()){toast("Escribe qué alimento necesitas.");return}if(!/^\d{10}$/.test(g("g9"))){toast("El teléfono debe tener 10 números.");return}if(!g("g8").trim()){toast("Escribe la dirección exacta donde se entregará el alimento.");return}S.o.push({id:"O-0"+(S.o.length+1),n:g("g1"),tipo:"Comedor comunitario",ub:g("g4"),direccion:g("g8"),prod:g("g2"),kg:+g("g3"),alm:100,h:[+g("g5"),+g("g6")],tel:g("g9"),ok:false});toast("Registro enviado. Falta la verificación.")},
+ addV(){
+   const f=$("#vehicleForm");
+   if(!f)return false;
+   if(!f.checkValidity()){
+     const bad=f.querySelector(":invalid"),msg=$("#vehicleError");
+     if(msg)msg.textContent="Completa todos los datos obligatorios del camión.";
+     if(bad)bad.focus();
+     return false;
+   }
+   const x=Object.fromEntries(new FormData(f).entries());
+   if(+x.fin<=+x.inicio){
+     const msg=$("#vehicleError");
+     if(msg)msg.textContent="La hora de fin debe ser posterior a la hora de inicio.";
+     return false;
+   }
+   S.v.push({
+     id:"V-"+String(S.v.length+1).padStart(3,"0"),
+     prov:x.prov,marca:x.marca,modelo:x.modelo,anio:+x.anio,
+     placas:x.placas.toUpperCase(),tipo:x.tipo,cap:+x.cap,ub:x.ub,
+     h:[+x.inicio,+x.fin],tel:x.telefono,est:"Disponible"
+   });
+   toast("Camión registrado correctamente");
+   return true;
+ },
+ apO(i){find("o",i).ok=true},
+ run(){S.ran=true},
+ acc(i){const p=lista(+i);if(!p)return;const e={id:"E-"+String(S.e.length+1).padStart(3,"0"),did:p.d.id,dn:`${p.d.prod} (${p.d.id})`,on:p.o.n,vn:p.v.id,q:p.q,est:"Reservada",hist:[]};log(e,`Asignación aceptada (puntuación ${p.t})`);
+  S.e.push(e);S.a.push({d:p.d.id,o:p.o.id,est:"Confirmada"});p.d.libre-=p.q;if(p.d.libre<=0)p.d.est="Reservada";p.v.est="Reservado";p.v.con=e.id;p.o.kg-=p.q;S.n++;toast("Asignación confirmada")},
+ rej(i){const P=lista(+i),m=document.getElementById("mo"+i).value;if(!P)return;S.a.push({d:P.d.id,o:P.o.id,est:"Rechazada"});S.inc.push(`${P.d.id} → ${P.o.n}: rechazada (${m.startsWith("Motivo")?"sin motivo":m})`)},
+ pick(i){const e=find("e",i);e.est="En recogida";log(e,"Recogida registrada")},
+ del(i){const e=find("e",i);e.rec=+g("rc"+i);e.est="Entregada";log(e,`Entrega confirmada: ${e.rec} kg recibidos`);if(e.rec<e.q)S.inc.push(`${e.id}: diferencia de ${e.q-e.rec} kg entre enviado y recibido`);
+  const d=find("d",e.did);if(d&&d.libre<=0)d.est="Entregada";const v=find("v",e.vn);if(v){v.est="Disponible";v.con=null}}};
+document.addEventListener("click",ev=>{const b=ev.target.closest("button[data-a]");if(!b)return;if(ACT[b.dataset.a]){ACT[b.dataset.a](b.dataset.i);draw()}});
+document.addEventListener("submit",ev=>{
+  if(ev.target && ev.target.id==="regForm"){
+    ev.preventDefault();
+    if(ACT.completeRegistration())draw();
+  }
+  if(ev.target && ev.target.id==="vehicleForm"){
+    ev.preventDefault();
+    if(ACT.addV())draw();
+  }
+});
+
+document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset&&t.dataset.tel!==undefined)t.value=t.value.replace(/\D/g,"").slice(0,10)});
+document.addEventListener("change",ev=>{const s=ev.target;if(s.dataset.a=="vst"){find("v",s.dataset.i).est=s.value;draw()}});
+draw();
+</script></body></html>
